@@ -1,3 +1,10 @@
+import java.util.stream.Collectors
+
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins
+
+import eu.mihosoft.vrl.v3d.CSG
+import eu.mihosoft.vrl.v3d.Cube
+import eu.mihosoft.vrl.v3d.Cylinder
 import eu.mihosoft.vrl.v3d.parametrics.*;
 CSG generate(){
 	String type= "teeNutWithProngs"
@@ -17,11 +24,23 @@ CSG generate(){
 	def prongLengthValue = measurments.prongLength
 	def sourceValue = measurments.source
 	def totalHeightValue = measurments.totalHeight
-for(String key:measurments.keySet().stream().sorted().collect(Collectors.toList()))
-println "teeNutWithProngs value "+key+" "+measurments.get(key)
-	// Stub of a CAD object
-	CSG part = new Cube().toCSG()
-	return part
+	def flangeDiameterValue = measurments.flangeDiameter
+	for(String key:measurments.keySet().stream().sorted().collect(Collectors.toList()))
+		println "teeNutWithProngs value "+key+" "+measurments.get(key)
+	CSG base = new Cylinder(flangeDiameterValue/2, flangeThicknessValue).toCSG()
+	CSG barrel = new Cylinder(barrelDiameterValue/2, totalHeightValue).toCSG()
+	double prongWidth = (flangeDiameterValue-barrelDiameterValue)/3.0
+	CSG prong = new Cube(prongWidth,flangeThicknessValue,prongLengthValue)		
+					.toCSG()
+					.toXMax()
+					.toYMax()
+					.toZMin()
+					.movex(flangeDiameterValue/2)
+	def prongs=[]
+	for(int i=0;i<360;i+=90)
+		prongs.add(prong.rotz(i))				
+
+	return CSG.unionAll([base,barrel,CSG.unionAll(prongs)])
 		.setParameter(size)
 		.setRegenerate({generate()})
 }
