@@ -25,8 +25,8 @@ CSG generate(){
 	def sourceValue = measurments.source
 	def totalHeightValue = measurments.totalHeight
 	def flangeDiameterValue = measurments.flangeDiameter
-	for(String key:measurments.keySet().stream().sorted().collect(Collectors.toList()))
-		println "teeNutWithProngs value "+key+" "+measurments.get(key)
+	//for(String key:measurments.keySet().stream().sorted().collect(Collectors.toList()))
+	//	println "teeNutWithProngs value "+key+" "+measurments.get(key)
 	CSG base = new Cylinder(flangeDiameterValue/2, flangeThicknessValue).toCSG()
 	CSG barrel = new Cylinder(barrelDiameterValue/2, totalHeightValue).toCSG()
 	double prongWidth = (flangeDiameterValue-barrelDiameterValue)/3.0
